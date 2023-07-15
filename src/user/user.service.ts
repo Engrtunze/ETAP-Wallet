@@ -7,7 +7,7 @@ import { DataConflictException } from 'src/exceptions/DataConflictException';
 import * as bcrypt from 'bcrypt';
 import { UserMapper } from 'src/mappers/user.mapper';
 import { AdminCreateUserDto } from './dto/admin-create-user.dto';
-import Role from './enum/role.enum';
+import Role from '../enum/role.enum';
 
 @Injectable()
 export class UserService {
@@ -24,6 +24,14 @@ export class UserService {
   async findUser(phone: string): Promise<User> {
     try {
       const user = await this.userRepository.findOne({ phone: phone });
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+  async findUserById(userId: string): Promise<User> {
+    try {
+      const user = await this.userRepository.findOne(userId);
       return user;
     } catch (error) {
       throw new InternalServerErrorException();

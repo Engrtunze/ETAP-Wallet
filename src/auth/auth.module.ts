@@ -4,12 +4,11 @@ import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
 import { JwtStrategy } from './auth-strategy/jwt-strategy';
 import { UserModule } from 'src/user/user.module';
 import { UserMapper } from 'src/mappers/user.mapper';
 import { LocalStrategy } from './auth-strategy/local-strategy';
-
+import * as crypto from 'crypto';
 @Module({
   imports: [
     ConfigModule,
@@ -21,7 +20,8 @@ import { LocalStrategy } from './auth-strategy/local-strategy';
       useFactory: async (configService: ConfigService) => ({
         secret:
           configService.get<string>('JWT_SECRET') ||
-          crypto.randomBytes(32).toString('hex'),
+          crypto.randomBytes(32).toString('hex') ||
+          process.env.JWT_SECRET,
         signOptions: { expiresIn: '1h' },
       }),
     }),
