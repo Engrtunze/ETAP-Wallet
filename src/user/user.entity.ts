@@ -2,7 +2,7 @@ import { Entity, EntityRepositoryType, Enum, Property } from '@mikro-orm/core';
 
 import { UserRepository } from '../user/user.repository';
 import { BaseEntity } from '../abstract-base-entity/base.entity';
-import Role from './enum/role.enum';
+import Role from '../enum/role.enum';
 
 @Entity({ customRepository: () => UserRepository })
 export class User extends BaseEntity {
