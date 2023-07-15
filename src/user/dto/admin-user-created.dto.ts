@@ -5,7 +5,7 @@ export class AdminUserCreatedDto {
   lastName: string;
   transactionPin: string;
   email: string;
-  isAdmin: boolean;
+  role: string;
   password: string;
   createdAt: Date;
   updatedAt: Date;

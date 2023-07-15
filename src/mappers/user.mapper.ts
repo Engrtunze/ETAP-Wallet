@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserCreatedDto } from '../user/dto/user-created.dto';
 import { User } from '../user/user.entity';
-import { AdminCreateUserDto } from 'src/user/dto/admin-create-user.dto';
 import { AdminUserCreatedDto } from 'src/user/dto/admin-user-created.dto';
 
 @Injectable()
@@ -14,7 +13,7 @@ export class UserMapper {
       email,
       phone,
       transactionPin,
-      isAdmin,
+      role,
       createdAt,
       updatedAt,
     } = user;
@@ -26,7 +25,7 @@ export class UserMapper {
       email,
       phone,
       transactionPin,
-      isAdmin,
+      role,
       createdAt,
       updatedAt,
     };
@@ -42,7 +41,7 @@ export class UserMapper {
       email,
       phone,
       transactionPin,
-      isAdmin,
+      role,
       createdAt,
       updatedAt,
     } = user;
@@ -55,7 +54,7 @@ export class UserMapper {
       email,
       phone,
       transactionPin,
-      isAdmin,
+      role,
       password: plainPassword,
       createdAt,
       updatedAt,

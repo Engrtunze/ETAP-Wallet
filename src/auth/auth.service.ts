@@ -10,6 +10,7 @@ import { UserService } from '../user/user.service';
 import { DataConflictException } from 'src/exceptions/DataConflictException';
 import { UserCreatedDto } from 'src/user/dto/user-created.dto';
 import { UserMapper } from 'src/mappers/user.mapper';
+import Role from 'src/user/enum/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,7 @@ export class AuthService {
       const createdUser = await this.userService.create({
         ...registrationData,
         password: hashedPassword,
-        isAdmin: true,
+        role: Role.Admin,
       });
       return this.userMapper.mapToUserCreatedDto(createdUser);
     } catch (err) {
@@ -49,7 +50,7 @@ export class AuthService {
         const payload: JwtPayload = {
           phone: user.phone,
           sub: user.id,
-          isAdmin: user.isAdmin,
+          role: user.role,
         };
         const accessToken = this.jwtService.sign(payload);
         user.lastLoggedIn = new Date();
