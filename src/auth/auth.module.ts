@@ -8,12 +8,13 @@ import * as crypto from 'crypto';
 import { JwtStrategy } from './auth-strategy/jwt-strategy';
 import { UserModule } from 'src/user/user.module';
 import { UserMapper } from 'src/mappers/user.mapper';
+import { LocalStrategy } from './auth-strategy/local-strategy';
 
 @Module({
   imports: [
     ConfigModule,
     UserModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule.register({ defaultStrategy: 'bearer' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -25,7 +26,7 @@ import { UserMapper } from 'src/mappers/user.mapper';
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy, UserMapper],
+  providers: [AuthService, LocalStrategy, UserMapper, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

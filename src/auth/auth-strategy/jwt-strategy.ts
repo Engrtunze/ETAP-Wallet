@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../jwt-payload';
 import { AuthService } from '../auth.service';
 import { LogInUserDto } from 'src/user/dto/login.dto';
-import { Inject } from '@nestjs/common';
+import { Inject, UnauthorizedException } from '@nestjs/common';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -19,8 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
   async validate(payload: JwtPayload) {
-    const { phone } = payload;
-    const loginDto: LogInUserDto = { phone, password: '' };
-    return await this.authService.validateUser(loginDto);
+    return {
+      phone: payload.phone,
+      userId: payload.sub,
+      roles: payload.role,
+    };
   }
 }

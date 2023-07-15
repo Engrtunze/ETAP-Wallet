@@ -7,6 +7,7 @@ import { DataConflictException } from 'src/exceptions/DataConflictException';
 import * as bcrypt from 'bcrypt';
 import { UserMapper } from 'src/mappers/user.mapper';
 import { AdminCreateUserDto } from './dto/admin-create-user.dto';
+import Role from './enum/role.enum';
 
 @Injectable()
 export class UserService {
@@ -41,8 +42,8 @@ export class UserService {
       const nonAdminUser = await this.create({
         ...request,
         password: hashedPassword,
-        isAdmin: false,
-        transactionPin: 'empty',
+        role: Role.User,
+        transactionPin: '',
       });
 
       return this.userMapper.mapToAdminUserCreatedDto(nonAdminUser);

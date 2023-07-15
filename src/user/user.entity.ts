@@ -1,7 +1,8 @@
-import { Entity, EntityRepositoryType, Property } from '@mikro-orm/core';
+import { Entity, EntityRepositoryType, Enum, Property } from '@mikro-orm/core';
 
 import { UserRepository } from '../user/user.repository';
 import { BaseEntity } from '../abstract-base-entity/base.entity';
+import Role from './enum/role.enum';
 
 @Entity({ customRepository: () => UserRepository })
 export class User extends BaseEntity {
@@ -15,8 +16,8 @@ export class User extends BaseEntity {
   phone: string;
   @Property()
   transactionPin?: string;
-  @Property()
-  isAdmin?: boolean;
+  @Enum({ items: () => Role, array: false, default: Role.User })
+  role: Role = Role.User;
   @Property()
   lastLoggedIn?: Date;
   @Property()

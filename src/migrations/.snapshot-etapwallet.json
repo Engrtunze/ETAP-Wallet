@@ -73,14 +73,19 @@
           "nullable": true,
           "mappedType": "string"
         },
-        "is_admin": {
-          "name": "is_admin",
-          "type": "boolean",
+        "role": {
+          "name": "role",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
-          "mappedType": "boolean"
+          "nullable": false,
+          "default": "'User'",
+          "enumItems": [
+            "User",
+            "Admin"
+          ],
+          "mappedType": "enum"
         },
         "last_logged_in": {
           "name": "last_logged_in",
