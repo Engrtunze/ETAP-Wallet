@@ -10,7 +10,7 @@ import { UserService } from '../user/user.service';
 import { DataConflictException } from 'src/exceptions/DataConflictException';
 import { UserCreatedDto } from 'src/user/dto/user-created.dto';
 import { UserMapper } from 'src/mappers/user.mapper';
-import Role from 'src/user/enum/role.enum';
+import Role from 'src/enum/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -31,10 +31,15 @@ export class AuthService {
       }
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(registrationData.password, salt);
+      const hashedPin = await bcrypt.hash(
+        registrationData.transactionPin,
+        salt,
+      );
 
       const createdUser = await this.userService.create({
         ...registrationData,
         password: hashedPassword,
+        transactionPin: hashedPin,
         role: Role.Admin,
       });
       return this.userMapper.mapToUserCreatedDto(createdUser);
@@ -52,6 +57,7 @@ export class AuthService {
           sub: user.id,
           role: user.role,
         };
+        console.log(payload);
         const accessToken = this.jwtService.sign(payload);
         user.lastLoggedIn = new Date();
         await this.entityManager.persistAndFlush(user);
@@ -69,5 +75,9 @@ export class AuthService {
     }
 
     return null;
+  }
+  async getUserIdFromToken(token: string): Promise<string> {
+    const decodedToken = this.jwtService.decode(token);
+    return decodedToken.sub;
   }
 }
