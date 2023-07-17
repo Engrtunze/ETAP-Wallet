@@ -16,6 +16,9 @@ import { TransactionProcessType } from 'src/enum/transaction-process-type.enum';
 import { WithdrawTransferDto } from './dto/create-withdraw.dto';
 import { CreateGetTransactionSummary } from './dto/create-get-transaction-summary.dto';
 import { GetTransactionSummary } from './dto/get-transaction-summary.dto';
+import { CreditWalletDto } from './dto/credit-wallet.dto';
+import { PaymentServiceService } from 'src/payment-service/payment-service.service';
+import { CreateChargeRequestDto } from 'src/payment-service/dto/create-charge-request.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -25,6 +28,7 @@ export class TransactionsService {
     private readonly walletService: WalletService,
     private readonly userService: UserService,
     private readonly entityManager: EntityManager,
+    private readonly paymentService: PaymentServiceService,
   ) {}
 
   async create(request: CreateTransferDto) {
@@ -117,6 +121,12 @@ export class TransactionsService {
         throw new BadRequestException('Insufficient funds');
       }
 
+      if (senderWallet.currency !== receiverWallet.currency) {
+        throw new BadRequestException(
+          'You can only transfer to same kind of currency, currency conversion service is not available at the moment',
+        );
+      }
+
       const balance = senderWallet.balance - transferRequest.amount;
       //update sender wallet balance
       await this.walletService.updateWalletBalance(balance, senderWallet.id);
@@ -207,6 +217,87 @@ export class TransactionsService {
         message: 'Transaction Successful',
       };
     });
+  }
+
+  async creditWallet(
+    userId: string,
+    creditWallet: CreditWalletDto,
+  ): Promise<Transactions> {
+    return await this.entityManager.transactional(async () => {
+      const req = await DecodeToken.getUserIdFromToken(this.jwtService, userId);
+      const receiverWallet = await this.walletService.getWallet(req);
+
+      if (!receiverWallet) {
+        throw new BadRequestException('invalid wallet id for user');
+      }
+
+      const requestDto = new CreateChargeRequestDto();
+      requestDto.amount = creditWallet.amount;
+      requestDto.email = creditWallet.email;
+      requestDto.pin = creditWallet.cardPin;
+      requestDto.card = {
+        cvv: creditWallet.cvv,
+        number: creditWallet.cardNumber,
+        expiry_month: creditWallet.expiry_month,
+        expiry_year: creditWallet.expiry_year,
+      };
+      requestDto.metadata = {
+        custom_fields: [
+          {
+            value: 'custom_value1',
+            display_name: 'custom_display_name1',
+            variable_name: 'custom_variable_name1',
+          },
+          {
+            value: 'custom_value2',
+            display_name: 'custom_display_name2',
+            variable_name: 'custom_variable_name2',
+          },
+        ],
+      };
+
+      const getPaystackRes = await this.paymentService.paystackCharge(
+        requestDto,
+      );
+
+      if (
+        !getPaystackRes.data.status ||
+        !getPaystackRes.data.status.includes('success')
+      ) {
+        throw new BadRequestException('Something went wrong');
+      }
+
+      const verify = await this.paymentService.verifyTransaction(
+        getPaystackRes.data.reference,
+      );
+
+      if (!verify.data.status || !verify.data.status.includes('success')) {
+        throw new BadRequestException('Something went wrong 2');
+      }
+
+      const paystackAmountNiara = verify.data.amount / 100;
+
+      const creditReceiverBalance =
+        receiverWallet.balance + paystackAmountNiara;
+
+      await this.walletService.updateWalletBalance(
+        creditReceiverBalance,
+        receiverWallet.id,
+      );
+
+      return await this.create({
+        senderWalletId: '',
+        receiverWalletId: receiverWallet.id,
+        pin: '',
+        amount: paystackAmountNiara,
+        type: TransactionType.CREDIT,
+        TransactionReference: generateTransactionReference(),
+        wallet: receiverWallet,
+        processType: TransactionProcessType.EXTERNAL,
+        description: `you recieved ${paystackAmountNiara} from paystack merchant with ${verify.data.customer.email}`,
+      });
+    });
+    // another validation that could be added to this method is validation the currency of the wallet the user is about to credit with the currency coming from paystack but due to limited time for submission i have to skip that.
   }
 
   async getTransactionSummary(
