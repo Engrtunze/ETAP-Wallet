@@ -14,15 +14,11 @@ import { AdminCreateUserDto } from 'src/user/dto/admin-create-user.dto';
 import { UserCreatedDto } from 'src/user/dto/user-created.dto';
 import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto/create.wallet.dto';
-import { Wallet } from './wallet.entity';
-import { AuthService } from 'src/auth/auth.service';
+import { WalletCreatedDto } from './dto/wallet-created.to';
 
 @Controller('wallet')
 export class WalletController {
-  constructor(
-    private readonly walletService: WalletService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly walletService: WalletService) {}
 
   @Post('/create-wallet')
   @HttpCode(HttpStatus.CREATED)
@@ -32,7 +28,7 @@ export class WalletController {
   async createWallet(
     @Req() request: Request,
     @Body(ValidationPipe) createWallet: CreateWalletDto,
-  ): Promise<Wallet> {
+  ): Promise<WalletCreatedDto> {
     const user = request.headers['authorization'];
     const userId = user.split(' ')[1];
     return this.walletService.createWallet(userId, createWallet);

@@ -7,8 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './config/database.module';
 import { WalletModule } from './wallet/wallet.module';
-import { JwtModule } from '@nestjs/jwt';
-import * as crypto from 'crypto';
+import { PaymentServiceModule } from './payment-service/payment-service.module';
+import { TransactionsModule } from './transactions/transactions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,6 +19,8 @@ import * as crypto from 'crypto';
     AuthModule,
     UserModule,
     WalletModule,
+    PaymentServiceModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

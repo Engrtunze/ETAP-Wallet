@@ -31,10 +31,15 @@ export class AuthService {
       }
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(registrationData.password, salt);
+      const hashedPin = await bcrypt.hash(
+        registrationData.transactionPin,
+        salt,
+      );
 
       const createdUser = await this.userService.create({
         ...registrationData,
         password: hashedPassword,
+        transactionPin: hashedPin,
         role: Role.Admin,
       });
       return this.userMapper.mapToUserCreatedDto(createdUser);

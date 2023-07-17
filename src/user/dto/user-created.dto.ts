@@ -4,7 +4,6 @@ export class UserCreatedDto {
   firstName: string;
   lastName: string;
   transactionPin: string;
-  email: string;
   role: string;
   createdAt: Date;
   updatedAt: Date;

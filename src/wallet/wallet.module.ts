@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from 'src/auth/auth.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Wallet } from './wallet.entity';
+import { WalletMapper } from 'src/mappers/wallet.mapper';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { Wallet } from './wallet.entity';
     JwtModule,
     AuthModule,
   ],
-  providers: [WalletService],
+  providers: [WalletService, WalletMapper],
   controllers: [WalletController],
+  exports: [WalletService],
 })
 export class WalletModule {}

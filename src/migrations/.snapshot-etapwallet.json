@@ -248,6 +248,147 @@
           "updateRule": "cascade"
         }
       }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "uuid_generate_v4()",
+          "mappedType": "uuid"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "transaction_reference": {
+          "name": "transaction_reference",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "enumItems": [
+            "debit",
+            "credit"
+          ],
+          "mappedType": "enum"
+        },
+        "process_type": {
+          "name": "process_type",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "enumItems": [
+            "wallet-to-wallet",
+            "external",
+            "Unknown"
+          ],
+          "mappedType": "enum"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'pending'",
+          "enumItems": [
+            "pending",
+            "success",
+            "failed"
+          ],
+          "mappedType": "enum"
+        },
+        "wallet_id": {
+          "name": "wallet_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        }
+      },
+      "name": "transactions",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "transactions_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "transactions_wallet_id_foreign": {
+          "constraintName": "transactions_wallet_id_foreign",
+          "columnNames": [
+            "wallet_id"
+          ],
+          "localTableName": "public.transactions",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.wallet",
+          "updateRule": "cascade"
+        }
+      }
     }
   ]
 }

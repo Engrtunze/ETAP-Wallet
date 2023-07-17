@@ -31,9 +31,6 @@ export class CreateUserDto {
   password: string;
   @IsOptional()
   @IsString()
-  @IsEmail()
-  email?: string;
-
   @ApiHideProperty()
   role: Role;
 }
