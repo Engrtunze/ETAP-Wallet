@@ -6,12 +6,14 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { JwtModule } from '@nestjs/jwt';
 import { WalletModule } from '../wallet/wallet.module';
 import { UserModule } from 'src/user/user.module';
+import { PaymentServiceModule } from 'src/payment-service/payment-service.module';
 @Module({
   imports: [
     MikroOrmModule.forFeature([Transactions]),
     JwtModule,
     WalletModule,
     UserModule,
+    PaymentServiceModule,
   ],
   controllers: [TransactionsController],
   providers: [TransactionsService],

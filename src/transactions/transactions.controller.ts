@@ -22,6 +22,7 @@ import { HasRoles } from 'src/auth/has-roles';
 import Role from 'src/enum/role.enum';
 import { CreateGetTransactionSummary } from './dto/create-get-transaction-summary.dto';
 import { GetTransactionSummary } from './dto/get-transaction-summary.dto';
+import { CreditWalletDto } from './dto/credit-wallet.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -66,5 +67,19 @@ export class TransactionsController {
     @Query(ValidationPipe) fetch: CreateGetTransactionSummary,
   ): Promise<GetTransactionSummary[]> {
     return this.transactionService.getTransactionSummary(fetch);
+  }
+
+  @Post('/credit-wallet')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOkResponse({ status: HttpStatus.CREATED })
+  @ApiOperation({ summary: 'withdraw from wallet' })
+  @UseGuards(JwtAuthGuard)
+  async creditWallet(
+    @Req() request: Request,
+    @Body(ValidationPipe) credit: CreditWalletDto,
+  ): Promise<Transactions> {
+    const user = request.headers['authorization'];
+    const userId = user.split(' ')[1];
+    return this.transactionService.creditWallet(userId, credit);
   }
 }
