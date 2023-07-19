@@ -230,9 +230,11 @@ export class TransactionsService {
       if (!receiverWallet) {
         throw new BadRequestException('invalid wallet id for user');
       }
+      //multiply amount by 100 convert it to kobo
+      const amountKobo = parseInt(creditWallet.amount) * 100;
 
       const requestDto = new CreateChargeRequestDto();
-      requestDto.amount = creditWallet.amount;
+      requestDto.amount = amountKobo.toString();
       requestDto.email = creditWallet.email;
       requestDto.pin = creditWallet.cardPin;
       requestDto.card = {
